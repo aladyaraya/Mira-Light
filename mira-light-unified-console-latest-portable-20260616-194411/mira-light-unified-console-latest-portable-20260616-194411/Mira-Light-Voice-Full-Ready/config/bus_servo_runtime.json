@@ -1,0 +1,11 @@
+{
+  "transport": "tcp",
+  "tcpHost": "192.168.0.183",
+  "tcpPort": 9527,
+  "timeoutSeconds": 2.0,
+  "defaultMoveMs": 220,
+  "maxMoveMs": 9999,
+  "inferMoveMsFromNextDelay": true,
+  "relativeRequiresKnownState": true,
+  "requireAck": true
+}

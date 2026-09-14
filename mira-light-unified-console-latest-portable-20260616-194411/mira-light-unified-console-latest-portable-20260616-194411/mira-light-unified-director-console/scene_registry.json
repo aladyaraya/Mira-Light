@@ -1,0 +1,537 @@
+{
+  "title": "Mira Light Shenzhen Demo Console",
+  "version": "2026-04-25-v2",
+  "boardDefaults": {
+    "host": "192.168.0.183",
+    "port": 22,
+    "user": "lckfb"
+  },
+  "scenes": [
+    {
+      "id": "01_presence_wake",
+      "number": "01",
+      "title": "起床",
+      "subtitle": "检测到有人来，慢慢醒来并看向前方",
+      "script": "01_presence_wake_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": [],
+      "operatorCue": "请评委靠近展台，主持人说：它发现有人来了。",
+      "successSignal": "灯先微亮，灯臂抬起伸懒腰，然后回到正常高度并看向前方。",
+      "fallbackBehavior": "如果起始睡姿不安全，用 --skip-start-sleep 直接从半醒姿态开始。"
+    },
+    {
+      "id": "02_cautious_intro",
+      "number": "02",
+      "title": "好奇你是谁",
+      "subtitle": "害羞、靠近、躲一下，再重新探出来",
+      "script": "02_cautious_intro_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": [],
+      "operatorCue": "主持人引导评委站在左侧，让 Mira 像小动物一样试探对方。",
+      "successSignal": "先看向左侧评委，轻微靠近和摇头，随后退缩低头，再重新探出并点头。",
+      "fallbackBehavior": "如果空间太窄，加 --skip-final-peek 跳过最后探出动作。"
+    },
+    {
+      "id": "03_hand_nuzzle",
+      "number": "03",
+      "title": "摸一摸",
+      "subtitle": "评委伸手，Mira 主动钻到手掌下面轻轻蹭",
+      "script": "03_hand_nuzzle_faithful_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--light-style", "solid", "--rub-cycles", "2", "--linger-seconds", "0.8", "--final-pose", "natural"],
+      "operatorCue": "主持人说：你可以轻轻摸摸它。请把手停在灯头前上方，不要主动压它；确认安全后再执行。",
+      "successSignal": "灯光变成白色常亮，Mira 先慢慢靠近，再低头钻到掌心下方，用灯头和中间关节持续做很小的上下/左右蹭动；手拿开时短追一下，最后柔和回到自然照明方向并保持白光。",
+      "fallbackBehavior": "如果手离得远或空间不稳，可临时改回旧脚本 03_hand_nuzzle_demo.py 的 --variant 04，只做短版接近和保持。"
+    },
+    {
+      "id": "04_offer_celebrate",
+      "number": "04",
+      "title": "Offer 庆祝",
+      "subtitle": "收到好消息后跳舞，彩灯庆祝，再慢慢降速",
+      "script": "04_offer_celebrate_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--party-light", "spin", "--hold-seconds", "1.4"],
+      "operatorCue": "打开 offer 邮件或讲到好消息时执行，蓝牙音箱可以同步放音乐。",
+      "successSignal": "姿态向上进入兴奋状态，上下左右摇摆，灯光进入 party 效果，最后减速回正常姿态。",
+      "fallbackBehavior": "如果灯效太刺激，把 --party-light 改为 rainbow。"
+    },
+    {
+      "id": "05_farewell",
+      "number": "05",
+      "title": "送别",
+      "subtitle": "评委离开时目送、点头拜拜、低头不舍",
+      "script": "05_farewell_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--nod-cycles", "2"],
+      "operatorCue": "请评委向左侧离开或挥手，主持人说：它有点舍不得你走。",
+      "successSignal": "Mira 看向左侧离场方向，慢慢点头两下，低头停住，又回看一眼。",
+      "fallbackBehavior": "如果现场节奏很快，把 --linger-seconds 设为 0.3。"
+    },
+    {
+      "id": "06_sleep",
+      "number": "06",
+      "title": "睡觉",
+      "subtitle": "评委走远后舒展一下，再慢慢蜷缩回睡觉",
+      "script": "06_sleep_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--rest-seconds", "1.5"],
+      "operatorCue": "作为一轮演示结尾执行，先确认灯头下方没有手和物体。",
+      "successSignal": "先从清醒姿态慢慢降低，做小伸展，然后进入睡觉折叠，灯光降到微光。",
+      "fallbackBehavior": "需要彻底收场时加 --lights-off；只想先看第一段时加 --lead-sleep-only。"
+    },
+    {
+      "id": "07_tabletop_follow",
+      "number": "07",
+      "title": "00 摆动测试",
+      "subtitle": "从 03 结束位过渡到指定姿态，00 号从 2200 摆到 2900 再回来",
+      "script": "07_tabletop_follow_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": [],
+      "operatorCue": "确认 03 右手摸一摸已经结束，或现场姿态可以安全过渡到 2480/2200/2300/2260 后执行。",
+      "successSignal": "Mira 先标记 03 真实结束位 2480/2200/2300/2260，再到 2200/2182/2783/2131；随后 00 号摆到 2900，再回到 2200，其他三个关节保持指定位置。",
+      "fallbackBehavior": "如果已经在 2200/2182/2783/2131，可以加 --skip-transition-pose；如果 00 幅度太大，把 --speed-0 调低或先把 2900 改小。"
+    },
+    {
+      "id": "08_photo_pose",
+      "number": "08",
+      "title": "拍照",
+      "subtitle": "0/3 号回中，1 号压低，2 号抬高，同步定格",
+      "script": "08_photo_pose_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--target-1", "1880", "--target-2", "1650", "--speed", "340", "--hold-seconds", "1.2"],
+      "operatorCue": "需要定格拍照时执行；先确认灯头下方和侧面没有手或物体。",
+      "successSignal": "0 号和 3 号同步回到 2048 中位，1 号降到低位、2 号抬到高位，形成稳定拍照姿态并短暂停留。",
+      "fallbackBehavior": "如果姿态太低，把 --target-1 调大一点；如果 2 号抬得太高，把 --target-2 调大一点。"
+    },
+    {
+      "id": "09_wake_photo_sleep",
+      "number": "09",
+      "title": "醒来拍照再睡",
+      "subtitle": "从睡姿醒来、伸懒腰、摆拍照姿态，真实拍照后立刻后台二次元渲染打印，同时回去睡觉",
+      "localScript": "scripts/09_wake_photo_sleep_demo.py",
+      "risk": "motion-high",
+      "requiredEnv": ["ARK_API_KEY"],
+      "timeoutSeconds": 300,
+      "defaultArgs": ["--hold-high-seconds", "1.2", "--rest-seconds", "0.3", "--printer-queue", "Mi_Wireless_Photo_Printer_9135_IP", "--print-media", "na_index-4x6_4x6in"],
+      "operatorCue": "需要完整拍照+二次元打印串场时执行；先确认灯头下方和侧面没有手或物体，摄像头无遮挡，9135 打印机在线。",
+      "successSignal": "Mira 先关灯进入睡姿，微光醒来并伸懒腰，摆到 2048/1880/1650/2048 拍照姿态后通过 /dev/video0 真实拍照；照片一保存到本机就立刻后台二次元渲染并提交 9135 打印机，同时主流程更连贯地回到睡觉姿态，最后关灯。",
+      "fallbackBehavior": "如果只想拍照渲染不打印，加 --no-print；如果打印机队列变化，用 --printer-queue 覆盖；如果回睡还是显得急或顿，用 --rest-seconds 微调最终停留。"
+    },
+    {
+      "id": "11_happy_dance",
+      "number": "11",
+      "title": "开心跳舞",
+      "subtitle": "收到好消息或被夸奖后开心地上下弹跳，彩灯闪烁庆祝",
+      "script": "11_happy_dance_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--bounce-cycles", "3", "--light-style", "spin", "--hold-seconds", "1.0"],
+      "operatorCue": "当 Mira 听到好消息、被夸奖或需要表达开心时执行；确认灯头下方没有手或物体。",
+      "successSignal": "Mira 先抬起到兴奋姿态，开始有节奏地上下弹跳并左右摇摆，灯光进入 party 旋转效果，最后摇头点头庆祝后缓慢回到自然姿态。",
+      "fallbackBehavior": "如果弹跳幅度太大，减少 --bounce-cycles；如果灯光太刺激，把 --light-style 改为 warm。"
+    },
+    {
+      "id": "12_sad_comfort",
+      "number": "12",
+      "title": "难过安慰",
+      "subtitle": "感知到用户叹气或疲惫，缓慢靠近做温柔的安慰动作",
+      "script": "12_sad_comfort_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--comfort-cycles", "2", "--linger-seconds", "0.8"],
+      "operatorCue": "当检测到叹气、疲惫语音或用户表达难过情绪时执行。",
+      "successSignal": "Mira 先缓慢转向用户，灯光调暗到柔和暖色，慢慢靠近做轻柔的点头和侧倾安慰动作，最后缓慢回到自然姿态。",
+      "fallbackBehavior": "如果空间不够靠近，减少 --comfort-cycles；如果动作太慢，把 --linger-seconds 减小。"
+    },
+    {
+      "id": "13_curious_peek",
+      "number": "13",
+      "title": "好奇探头",
+      "subtitle": "发现有趣的东西，好奇地探头观察，像小动物一样试探",
+      "script": "13_curious_peek_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--peek-cycles", "3", "--direction", "left", "--pause-seconds", "0.25"],
+      "operatorCue": "当 Mira 注意到新事物或需要表达好奇时执行；可指定 --direction left/right/center 控制探头方向。",
+      "successSignal": "Mira 先警觉注意到目标，朝目标方向探头并靠近，反复探出-缩回-歪头观察，最后满意地点头回到自然姿态。",
+      "fallbackBehavior": "如果探头幅度太大，减少 --peek-cycles；如果想左右交替探头，用 --direction center。"
+    },
+    {
+      "id": "14_shy_blush",
+      "number": "14",
+      "title": "害羞脸红",
+      "subtitle": "被夸奖后害羞地低头，灯光变成温暖的粉色调",
+      "script": "14_shy_blush_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--shy-cycles", "2", "--linger-seconds", "0.6"],
+      "operatorCue": "当 Mira 被夸奖、收到赞美或需要表达害羞时执行。",
+      "successSignal": "Mira 先轻微一愣，灯光变成粉暖色，慢慢低头并反复偷看-低头-侧倾，最后缓慢抬头做小点头回到自然姿态。",
+      "fallbackBehavior": "如果低头幅度太大，减少 --shy-cycles；如果灯光太暗，可在脚本中调高 blush 色值。"
+    },
+    {
+      "id": "15_stretch_yawn",
+      "number": "15",
+      "title": "伸懒腰打哈欠",
+      "subtitle": "醒来或休息间隙做大伸展，灯光渐亮再渐回",
+      "script": "15_stretch_yawn_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--stretch-cycles", "2", "--hold-seconds", "0.8", "--yawn-pause", "0.6"],
+      "operatorCue": "当 Mira 刚醒来、久坐后需要活动或表达慵懒时执行；确认灯头上方空间足够。",
+      "successSignal": "Mira 先从放松姿态缓慢向上伸展，做大幅度伸手-仰头-停顿的哈欠动作，左右交替侧伸展，最后缓慢回到自然姿态。",
+      "fallbackBehavior": "如果伸展幅度太大，减少 --stretch-cycles；如果哈欠停顿太久，减小 --yawn-pause。"
+    },
+    {
+      "id": "16_alert_startle",
+      "number": "16",
+      "title": "受惊吓",
+      "subtitle": "听到突然声响受惊，快速后缩抖动，然后缓慢恢复",
+      "script": "16_alert_startle_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--recover-seconds", "1.0", "--intensity", "medium"],
+      "operatorCue": "当检测到突然声响、惊吓事件或需要表达受惊时执行。",
+      "successSignal": "Mira 先从平静姿态突然快速后缩上跳，灯光闪白，做受惊摇头抖动，然后缓慢恢复并左右警惕张望，最后安心点头回到自然姿态。",
+      "fallbackBehavior": "如果惊吓幅度太大，用 --intensity low；如果想要更剧烈反应，用 --intensity high。"
+    },
+    {
+      "id": "17_greeting_wave",
+      "number": "17",
+      "title": "打招呼挥手",
+      "subtitle": "看到有人来，抬手挥手打招呼，灯光温暖明亮",
+      "script": "17_greeting_wave_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--wave-cycles", "3", "--direction", "left", "--hold-seconds", "0.5"],
+      "operatorCue": "当检测到有人靠近、开场欢迎或需要打招呼时执行。",
+      "successSignal": "Mira 先注意到来人并振作，抬起一侧手做有节奏的挥手摆动，完成后点头致意并左右轻摇，回到自然姿态。",
+      "fallbackBehavior": "如果挥手幅度太大，减少 --wave-cycles；如果想换方向挥手，用 --direction right 或 center。"
+    },
+    {
+      "id": "18_thinking_ponder",
+      "number": "18",
+      "title": "思考发呆",
+      "subtitle": "被问到问题时陷入沉思，缓慢歪头点头，最后灵光一闪",
+      "script": "18_thinking_ponder_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--think-cycles", "3", "--ponder-seconds", "0.5", "--eureka"],
+      "operatorCue": "当 Mira 被问到问题、需要思考或表达沉思时执行。",
+      "successSignal": "Mira 先抬头进入思考姿态，灯光调暗，缓慢左右歪头并做考虑性点头，反复沉思后突然灵光一闪（Eureka），灯光变亮并兴奋点头，回到自然姿态。",
+      "fallbackBehavior": "如果思考时间太长，减少 --think-cycles；如果不需要灵光一闪结尾，加 --no-eureka。"
+    },
+    {
+      "id": "19_angry_pout",
+      "number": "19",
+      "title": "愤怒生气",
+      "subtitle": "被惹恼后快速跺脚转身，红灯闪烁，然后缓慢消气",
+      "script": "19_angry_pout_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--anger-cycles", "3", "--simmer-seconds", "0.8"],
+      "operatorCue": "当 Mira 被惹恼、表达不满或需要展示愤怒情绪时执行。",
+      "successSignal": "Mira 先猛然一震，灯光变红，快速跺脚转身并前推，反复几次后进入缓慢生闷气状态，最后不情愿地回到自然姿态。",
+      "fallbackBehavior": "如果愤怒幅度太大，减少 --anger-cycles；如果消气太快，增大 --simmer-seconds。"
+    },
+    {
+      "id": "20_proud_chest",
+      "number": "20",
+      "title": "骄傲自信",
+      "subtitle": "完成成就后挺胸抬头，灯光明亮，缓慢自豪环顾",
+      "script": "20_proud_chest_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--proud-cycles", "2", "--hold-seconds", "0.8"],
+      "operatorCue": "当 Mira 完成任务、获得成就或需要表达自豪时执行。",
+      "successSignal": "Mira 先缓慢挺胸抬头到最高姿态，灯光渐亮，自豪地左右环顾并满意点头，最后优雅回到自然姿态。",
+      "fallbackBehavior": "如果挺胸幅度太大，减少 --proud-cycles；如果太高，可在脚本中调低 height 参数。"
+    },
+    {
+      "id": "21_sleepy_drowse",
+      "number": "21",
+      "title": "困倦打盹",
+      "subtitle": "犯困时头慢慢下垂，挣扎着醒来又再次打盹",
+      "script": "21_sleepy_drowse_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--drowse-cycles", "3", "--final-sleep"],
+      "operatorCue": "当 Mira 需要表达困倦、夜间模式或久坐后犯困时执行。",
+      "successSignal": "Mira 先缓慢下垂，灯光渐暗，突然惊醒又慢慢再次打盹，反复几次后最终睡着或恢复精神。",
+      "fallbackBehavior": "如果不想最终睡着，加 --no-sleep 以恢复精神结尾；如果打盹次数太多，减少 --drowse-cycles。"
+    },
+    {
+      "id": "22_laugh_giggle",
+      "number": "22",
+      "title": "大笑欢乐",
+      "subtitle": "听到有趣的事后开始笑，有节奏地上下弹跳，灯光欢快",
+      "script": "22_laugh_giggle_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--laugh-cycles", "4", "--intensity", "medium"],
+      "operatorCue": "当 Mira 听到笑话、有趣的事或需要表达欢乐时执行。",
+      "successSignal": "Mira 先忍住笑发抖，然后开始有节奏地上下弹跳并左右摇摆，灯光闪烁，最后慢慢平息并满足地叹气回到自然姿态。",
+      "fallbackBehavior": "如果笑得太剧烈，用 --intensity low；如果想要更夸张，用 --intensity high。"
+    },
+    {
+      "id": "23_love_heart",
+      "number": "23",
+      "title": "爱心表白",
+      "subtitle": "表达爱意时缓慢靠近，灯光变成温暖粉色，心跳脉动",
+      "script": "23_love_heart_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--heartbeats", "3", "--linger-seconds", "0.8"],
+      "operatorCue": "当 Mira 需要表达爱意、感谢或温暖情感时执行。",
+      "successSignal": "Mira 先缓慢转向用户并靠近，灯光变成粉暖色，做心跳脉动动作并温柔摇摆，最后保持温暖姿态缓慢回到自然位。",
+      "fallbackBehavior": "如果心跳幅度太大，减少 --heartbeats；如果灯光太暗，可在脚本中调高色值。"
+    },
+    {
+      "id": "24_confused_lost",
+      "number": "24",
+      "title": "困惑迷茫",
+      "subtitle": "听不懂时左右张望，歪头耸肩，灯光偏暗偏冷",
+      "script": "24_confused_lost_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--confused-cycles", "2", "--resolve"],
+      "operatorCue": "当 Mira 听不懂、被复杂问题困扰或需要表达困惑时执行。",
+      "successSignal": "Mira 先歪头表示疑惑，左右张望寻找答案并耸肩，反复几次后突然恍然大悟或仍然困惑地耸肩。",
+      "fallbackBehavior": "如果不想最终恍然大悟，加 --no-resolve 以仍然困惑结尾；如果张望幅度太大，减少 --confused-cycles。"
+    },
+    {
+      "id": "25_bow_thanks",
+      "number": "25",
+      "title": "鞠躬致谢",
+      "subtitle": "表达感谢时缓慢深鞠躬，灯光温暖，然后优雅起身",
+      "script": "25_bow_thanks_demo.py",
+      "risk": "motion-medium",
+      "defaultArgs": ["--bow-cycles", "2", "--bow-depth", "medium", "--hold-seconds", "0.6"],
+      "operatorCue": "当 Mira 需要表达感谢、致意或行礼时执行。",
+      "successSignal": "Mira 先端正站好，缓慢深鞠躬并保持，然后优雅起身做感谢点头，最后满足地轻摇回到自然姿态。",
+      "fallbackBehavior": "如果鞠躬太深，用 --bow-depth shallow；如果想要更恭敬，用 --bow-depth deep。"
+    },
+    {
+      "id": "26_excited_bounce",
+      "number": "26",
+      "title": "兴奋激动",
+      "subtitle": "超级兴奋时快速弹跳，灯光彩虹旋转，逐渐升级到最高点",
+      "script": "26_excited_bounce_demo.py",
+      "risk": "motion-high",
+      "defaultArgs": ["--bounce-cycles", "3", "--peak-seconds", "0.3"],
+      "operatorCue": "当 Mira 遇到极其兴奋的事、需要表达极度激动时执行；确认灯头下方没有手或物体。",
+      "successSignal": "Mira 先注意到兴奋源并振作，开始逐渐加速的弹跳并左右摇摆，灯光进入彩虹旋转，达到最高点后逐渐减速回到自然姿态。",
+      "fallbackBehavior": "如果弹跳太剧烈，减少 --bounce-cycles；如果最高点保持太久，减小 --peak-seconds。"
+    }
+  ],
+  "quickActions": [
+    {
+      "id": "force_stop_neutral",
+      "title": "强停归位",
+      "risk": "motion-emergency",
+      "emergency": true,
+      "confirm": "将中断当前动作、清空等待队列，并强制回到正常位。确认执行？",
+      "commands": [
+        {
+          "label": "stop known Mira motion scripts",
+          "command": "pkill -f '/[0-9][0-9]_[^/]*_demo\\.py' || true\npkill -f '[f]our_servo_control\\.py' || true\nsleep 0.15"
+        },
+        {
+          "label": "force return neutral pose",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py pose 2048 2150 2048 2130 --speeds 280 180 180 280"
+        },
+        {
+          "label": "warm neutral light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py all 255 220 180 100"
+        },
+        {
+          "label": "read all servo positions",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py read-pos-all || true"
+        }
+      ]
+    },
+    {
+      "id": "led_off",
+      "title": "灯光关闭",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "turn light off",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py off"
+        }
+      ]
+    },
+    {
+      "id": "led_warm",
+      "title": "暖光待机",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "warm standby light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py all 255 220 180 105"
+        }
+      ]
+    },
+    {
+      "id": "led_white",
+      "title": "白光照明",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "white tabletop light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py all 255 255 255 120"
+        }
+      ]
+    },
+    {
+      "id": "led_white_spin",
+      "title": "白色旋转",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "soft white spinning palm light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py spin 255 255 255 0 1 150"
+        }
+      ]
+    },
+    {
+      "id": "led_rainbow_spin",
+      "title": "彩色风车",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "rainbow spinning pinwheel",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py spin --rainbow 0 1 185"
+        }
+      ]
+    },
+    {
+      "id": "led_blue_spin",
+      "title": "蓝色旋转风车",
+      "risk": "light-only",
+      "commands": [
+        {
+          "label": "blue spinning pinwheel",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py spin 0 0 255 0 1 185"
+        }
+      ]
+    },
+    {
+      "id": "ping_servos",
+      "title": "Ping 舵机",
+      "risk": "read-only",
+      "commands": [
+        {
+          "label": "ping all servos",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py ping-all"
+        }
+      ]
+    },
+    {
+      "id": "read_positions",
+      "title": "读取舵机位置",
+      "risk": "read-only",
+      "commands": [
+        {
+          "label": "read all servo positions",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py read-pos-all"
+        }
+      ]
+    },
+    {
+      "id": "recover_board_services",
+      "title": "恢复板端服务",
+      "risk": "system-recovery",
+      "runLabel": "一键恢复",
+      "localScript": "scripts/recover_board_services.py",
+      "timeoutSeconds": 90,
+      "defaultArgs": []
+    },
+    {
+      "id": "digua_remote_anime_render",
+      "title": "地瓜拍照渲染",
+      "risk": "read-only",
+      "localScript": "$JAVIS_DIGUA_RENDER_SCRIPT",
+      "requiredEnv": ["ARK_API_KEY"],
+      "timeoutSeconds": 240,
+      "defaultArgs": [
+        "--output-dir",
+        "$MIRA_SHENZHEN_DIGUA_OUTPUT_DIR"
+      ]
+    },
+    {
+      "id": "head_shake",
+      "title": "摇头",
+      "risk": "motion-medium",
+      "commands": [
+        {
+          "label": "shake servo 3 left and right",
+          "command": "python3 /home/sunrise/Desktop/servo_3_shake_2100_2000.py --cycles 2 --left 2360 --right 1980 --return-target 2130 --speed 260 --pause 0.05 --max-segment-wait 3.0"
+        }
+      ]
+    },
+    {
+      "id": "head_nod",
+      "title": "点头",
+      "risk": "motion-medium",
+      "commands": [
+        {
+          "label": "nod servo 2 up and down",
+          "command": "python3 /home/sunrise/Desktop/servo_2_nod_1900_2200.py --cycles 2 --low 1880 --high 2220 --return-target 2048 --pre-target 2130 --speed 260 --pause 0.05 --max-segment-wait 3.5"
+        }
+      ]
+    },
+    {
+      "id": "voice_motion_listening",
+      "title": "独立调试：听",
+      "risk": "motion-medium",
+      "script": "10_voice_motion_demo.py",
+      "defaultArgs": ["listening"]
+    },
+    {
+      "id": "voice_motion_thinking",
+      "title": "独立调试：想",
+      "risk": "motion-medium",
+      "script": "10_voice_motion_demo.py",
+      "defaultArgs": ["thinking"]
+    },
+    {
+      "id": "voice_motion_answer",
+      "title": "独立调试：答",
+      "risk": "motion-medium",
+      "script": "10_voice_motion_demo.py",
+      "defaultArgs": ["answer"],
+      "playAnswerAudio": true
+    },
+    {
+      "id": "combo_01_07_03_07_08_photo",
+      "title": "串场 01+07→03→07→08",
+      "risk": "motion-high",
+      "script": "01_07_03_07_08_photo_combo_test.py",
+      "defaultArgs": []
+    },
+    {
+      "id": "combo_01_07_03_07_08_04_offer",
+      "title": "串场 01+07→03→07→08→04",
+      "risk": "motion-high",
+      "script": "01_07_03_07_08_04_offer_combo_test.py",
+      "defaultArgs": []
+    },
+    {
+      "id": "normal_pose",
+      "title": "回正常位",
+      "risk": "motion-medium",
+      "commands": [
+        {
+          "label": "return neutral pose",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py pose 2048 2150 2048 2130 --speeds 280 180 180 280"
+        },
+        {
+          "label": "warm neutral light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py all 255 220 180 100"
+        }
+      ]
+    },
+    {
+      "id": "sleep_fold",
+      "title": "归位睡觉",
+      "risk": "motion-high",
+      "commands": [
+        {
+          "label": "fold into sleep",
+          "command": "python3 /home/sunrise/Desktop/four_servo_control.py pose 2048 1821 2912 2130 --speeds 3000 480 2040 3000"
+        },
+        {
+          "label": "dim sleep light",
+          "command": "python3 /home/sunrise/Desktop/send_uart3_led_cmd.py all 255 180 120 20"
+        }
+      ]
+    }
+  ]
+}

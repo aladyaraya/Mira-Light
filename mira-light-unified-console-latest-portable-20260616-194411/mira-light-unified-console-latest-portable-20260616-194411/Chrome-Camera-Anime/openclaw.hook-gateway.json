@@ -1,0 +1,100 @@
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "workspace": "__HOME__/.openclaw/workspace",
+      "model": {
+        "primary": "openai-codex/gpt-5.3-codex"
+      },
+      "models": {
+        "openai-codex/gpt-5.3-codex": {}
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "ownerDisplay": "raw",
+    "restart": true
+  },
+  "gateway": {
+    "auth": {
+      "mode": "token",
+      "token": "__REDACTED_TOKEN__"
+    },
+    "bind": "loopback",
+    "mode": "local",
+    "port": 18791,
+    "remote": {
+      "sshTarget": "__REMOTE_SSH_TARGET__",
+      "token": "__REDACTED_TOKEN__",
+      "url": "ws://__REMOTE_HOST__:18790"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "meta": {
+    "lastTouchedAt": "2026-03-21T04:00:22Z",
+    "lastTouchedVersion": "2026.2.26"
+  },
+  "plugins": {
+    "entries": {
+      "lingzhu": {
+        "enabled": true
+      }
+    },
+    "installs": {
+      "lingzhu": {
+        "installedAt": "2026-03-19T07:22:12.078Z",
+        "installPath": "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge",
+        "source": "path",
+        "sourcePath": "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge"
+      }
+    },
+    "load": {
+      "paths": [
+        "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge"
+      ]
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-01T02:11:44.564Z",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local",
+    "lastRunVersion": "2026.1.29"
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:junkaiwang.nju@outlook.com": {
+        "provider": "openai-codex",
+        "mode": "oauth",
+        "email": "junkaiwang.nju@outlook.com"
+      }
+    },
+    "order": {
+      "openai-codex": [
+        "openai-codex:junkaiwang.nju@outlook.com"
+      ]
+    }
+  },
+  "hooks": {
+    "enabled": true,
+    "token": "__REDACTED_TOKEN__",
+    "path": "/hooks",
+    "allowedAgentIds": [
+      "main"
+    ],
+    "defaultSessionKey": "hook:chrome-camera-anime"
+  }
+}

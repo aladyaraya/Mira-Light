@@ -1,0 +1,55 @@
+.DS_Store
+Thumbs.db
+
+# Local editor and agent state
+.cursor/
+.uploads/
+.omx/
+.mira-runtime/
+
+# Python and JavaScript dependencies/build output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+node_modules/
+dist/
+build/
+.next/
+target/
+
+# Runtime output and generated artifacts
+runtime/
+**/runtime/
+outputs/
+output/
+tmp/
+logs/
+**/logs/
+cache/
+**/cache/
+*.log
+*.pid
+*.lock
+*.db
+*.sqlite
+*.sqlite3
+test_frame.jpg
+test_frame_warm.jpg
+README copy.md
+
+# Private configuration and secrets
+*.env
+.env
+.env.*
+!*.env.example
+!**/*.env.example
+config/private/
+**/config/private/
+*.key
+*.pem
+*.p12
+*.pfx

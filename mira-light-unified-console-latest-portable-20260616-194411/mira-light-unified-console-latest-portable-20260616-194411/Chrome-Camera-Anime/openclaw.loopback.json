@@ -1,0 +1,71 @@
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "workspace": "__HOME__/.openclaw/workspace"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "ownerDisplay": "raw",
+    "restart": true
+  },
+  "gateway": {
+    "auth": {
+      "mode": "token",
+      "token": "__REDACTED_TOKEN__"
+    },
+    "bind": "loopback",
+    "mode": "remote",
+    "port": 18789,
+    "remote": {
+      "sshTarget": "__REMOTE_SSH_TARGET__",
+      "token": "__REDACTED_TOKEN__",
+      "url": "ws://127.0.0.1:18791"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "meta": {
+    "lastTouchedAt": "2026-03-21T04:00:22Z",
+    "lastTouchedVersion": "2026.2.26"
+  },
+  "plugins": {
+    "entries": {
+      "lingzhu": {
+        "enabled": true
+      }
+    },
+    "installs": {
+      "lingzhu": {
+        "installedAt": "2026-03-19T07:22:12.078Z",
+        "installPath": "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge",
+        "source": "path",
+        "sourcePath": "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge"
+      }
+    },
+    "load": {
+      "paths": [
+        "__HOME__/Documents/GitHub/Mira/core/plugins/lingzhu-bridge"
+      ]
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-01T02:11:44.564Z",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local",
+    "lastRunVersion": "2026.1.29"
+  }
+}

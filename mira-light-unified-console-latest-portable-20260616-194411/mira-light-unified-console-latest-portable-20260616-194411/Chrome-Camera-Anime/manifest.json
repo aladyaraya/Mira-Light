@@ -1,0 +1,40 @@
+{
+  "entries": [
+    {
+      "id": "fig1",
+      "path": "fig1.png",
+      "tags": [
+        "landscape",
+        "anime-reference",
+        "scenic"
+      ]
+    },
+    {
+      "id": "fig2",
+      "path": "fig2.png",
+      "tags": [
+        "landscape",
+        "anime-reference",
+        "scenic"
+      ]
+    },
+    {
+      "id": "fig3",
+      "path": "fig3.png",
+      "tags": [
+        "landscape",
+        "anime-reference",
+        "scenic"
+      ]
+    },
+    {
+      "id": "fig4",
+      "path": "fig4.png",
+      "tags": [
+        "landscape",
+        "anime-reference",
+        "scenic"
+      ]
+    }
+  ]
+}

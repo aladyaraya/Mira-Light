@@ -1,0 +1,21 @@
+{
+  "listen_host": "127.0.0.1",
+  "listen_port": 9771,
+  "queue_name": "Mi_Wireless_Photo_Printer_9135_IP",
+  "display_name": "Mi_Wireless_Photo_Printer_9135_IP",
+  "default_copies": 8,
+  "token_env_var": "OPENCLAW_PRINTER_BRIDGE_TOKEN",
+  "media_aliases": {
+    "three_inch": "3x3.Fullbleed",
+    "4x6": "na_index-4x6_4x6in",
+    "4x6.Fullbleed": "na_index-4x6_4x6in"
+  },
+  "supported_media": [
+    "3x3",
+    "3x3.Fullbleed",
+    "4x6",
+    "4x6.Fullbleed",
+    "4x6.Borderless",
+    "na_index-4x6_4x6in"
+  ]
+}

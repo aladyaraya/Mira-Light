@@ -1,0 +1,21 @@
+# Mira Light Unified Port Monitor Requirements
+# Python >= 3.9
+
+# Core dependencies (usually already installed)
+# - No external dependencies required for basic functionality
+
+# Optional dependencies for enhanced functionality:
+
+# Serial port detection (optional)
+# pyserial>=3.5
+
+# Audio device detection (optional)
+# sounddevice>=0.4.6
+# soundfile>=0.12.1
+# pyaudio>=0.2.13
+
+# WebSocket support for model endpoint detection (optional)
+# websocket-client>=1.7.0
+
+# Enhanced HTTP requests (optional)
+# requests>=2.32.3

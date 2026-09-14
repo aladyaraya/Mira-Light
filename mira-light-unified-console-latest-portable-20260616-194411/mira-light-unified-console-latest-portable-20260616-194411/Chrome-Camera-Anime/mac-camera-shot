@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/mac-camera-common.sh"
+
+ensure_cache_dir
+
+command_output="$(capture_mac_camera_snap_json)"
+media_path="$(node -e 'const payload = JSON.parse(process.argv[1]); const file = payload.files?.[0]?.path; if (!file) process.exit(1); process.stdout.write(file);' "$command_output")"
+require_file "$media_path"
+cp "$media_path" "$latest_image_path"
+
+current_hash="$(shasum -a 256 "$latest_image_path" | awk '{print $1}')"
+last_hash="$(read_state_field lastHash || true)"
+last_emitted_at="$(read_state_field lastEmittedAt || true)"
+
+observed_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+observed_at_epoch="$(date -u +%s)"
+emit_due=false
+change_score="0"
+activity_state="idle"
+reasons_json='["heartbeat"]'
+person_present=false
+person_count=0
+
+if [[ -z "$last_hash" || "$current_hash" != "$last_hash" ]]; then
+  change_score="1"
+  activity_state="active_motion"
+  reasons_json='["scene_changed"]'
+  emit_due=true
+fi
+
+if [[ -n "$last_emitted_at" ]]; then
+  last_emitted_epoch="$(date -j -u -f "%Y-%m-%dT%H:%M:%SZ" "$last_emitted_at" "+%s" 2>/dev/null || true)"
+  if [[ -n "$last_emitted_epoch" ]]; then
+    elapsed=$((observed_at_epoch - last_emitted_epoch))
+    if (( elapsed >= mac_camera_heartbeat_sec )); then
+      emit_due=true
+      if [[ "$change_score" == "0" ]]; then
+        reasons_json='["heartbeat"]'
+      fi
+    fi
+  fi
+else
+  emit_due=true
+fi
+
+latest_json="$(node - "$observed_at" "$change_score" "$activity_state" "$reasons_json" "$person_present" "$person_count" "$emit_due" "$latest_image_path" <<'NODE'
+const path = require("node:path");
+const [
+  observedAt,
+  changeScore,
+  activityState,
+  reasonsJson,
+  personPresent,
+  personCount,
+  emitDue,
+  latestPath,
+] = process.argv.slice(2);
+
+const observationId = `amb-${Date.now()}`;
+const reasons = JSON.parse(reasonsJson);
+const payload = {
+  schemaVersion: "0.1.0",
+  sessionId: "sess-mac-camera-sidecar",
+  observationId,
+  observedAt,
+  source: {
+    deviceFamily: "mac_webcam",
+    deviceName: "MacBook Pro (2)",
+    appVersion: "0.1.0",
+  },
+  capture: {
+    mode: "snapshot",
+    frameRef: `file://${path.resolve(latestPath)}`,
+  },
+  event: {
+    changeScore: Number(changeScore),
+    personPresent: personPresent === "true",
+    personCount: Number(personCount),
+    activityState,
+    reasons,
+  },
+  privacy: {
+    retainFrame: false,
+  },
+  local: {
+    emitDue: emitDue === "true",
+  },
+};
+
+process.stdout.write(JSON.stringify(payload, null, 2));
+NODE
+)"
+
+state_json="$(node - "$current_hash" "$observed_at" "$last_emitted_at" <<'NODE'
+const [lastHash, lastObservedAt, lastEmittedAt] = process.argv.slice(2);
+const payload = {
+  lastHash,
+  lastObservedAt,
+};
+if (lastEmittedAt) {
+  payload.lastEmittedAt = lastEmittedAt;
+}
+process.stdout.write(JSON.stringify(payload, null, 2));
+NODE
+)"
+
+write_json_file "$latest_json_path" "$latest_json"
+write_json_file "$state_json_path" "$state_json"
+
+printf '%s\n' "$latest_json"

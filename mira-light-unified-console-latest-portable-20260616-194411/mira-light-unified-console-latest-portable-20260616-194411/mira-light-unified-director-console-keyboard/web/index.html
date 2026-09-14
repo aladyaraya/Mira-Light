@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mira Light Unified Director Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Shenzhen Fixed Protocol</p>
+          <h1>Mira Light 综合导演台</h1>
+          <p class="subcopy">深圳演示动作、板端摄像头画面和摸摸系统开关集中在同一个本地控制台。默认预览不动机器，执行时才通过 SSH 发到地瓜开发板。</p>
+        </div>
+        <div class="hero-card">
+          <span>BOARD</span>
+          <strong id="board-summary">-</strong>
+          <small id="password-summary">password: -</small>
+        </div>
+      </header>
+
+      <section class="top-grid">
+        <article class="panel connection-panel">
+          <div class="panel-title">
+            <h2>连接</h2>
+            <p>密码只发给本地控制台后端，不写入仓库。</p>
+          </div>
+          <div class="fields">
+            <label>
+              Host
+              <input id="host" type="text" />
+            </label>
+            <label>
+              Port
+              <input id="port" type="number" />
+            </label>
+            <label>
+              User
+              <input id="user" type="text" />
+            </label>
+            <label>
+              Password
+              <input id="password" type="password" placeholder="可留空；也可用环境变量" />
+            </label>
+          </div>
+          <div class="connection-actions">
+            <button id="apply-connection" type="button" class="secondary">应用连接</button>
+            <button id="diagnose-connection" type="button">连接诊断</button>
+          </div>
+        </article>
+
+        <article class="panel status-panel">
+          <div class="panel-title">
+            <h2>状态</h2>
+            <p>最近一次预览或执行结果。</p>
+          </div>
+          <div class="status-row">
+            <span>RUNNING</span>
+            <strong id="running">-</strong>
+          </div>
+          <div class="status-row">
+            <span>CURRENT</span>
+            <strong id="current">-</strong>
+          </div>
+          <div class="status-row">
+            <span>LAST CODE</span>
+            <strong id="last-code">-</strong>
+          </div>
+        </article>
+
+        <article class="panel insight-panel">
+          <section class="insight-section">
+            <div class="panel-title row-title compact-title">
+              <div>
+                <h2>摄像头</h2>
+                <p id="camera-state">等待画面。</p>
+              </div>
+              <button id="camera-capture" type="button">抓取</button>
+            </div>
+            <div class="camera-frame">
+              <img id="camera-image" alt="Mira Light board camera latest frame" />
+              <span id="camera-placeholder">暂无画面</span>
+            </div>
+            <div class="camera-meta">
+              <span id="camera-updated">-</span>
+              <span id="camera-meta">-</span>
+            </div>
+            <div class="side-button-row">
+              <button id="camera-start" type="button">开启刷新</button>
+              <button id="camera-stop" type="button" class="secondary">暂停刷新</button>
+            </div>
+            <div class="side-button-row">
+              <button id="camera-render-print-latest" type="button">渲染并打印当前画面</button>
+              <button id="camera-reprint-latest-render" type="button" class="secondary">重打最新渲染图</button>
+            </div>
+            <div class="print-progress">
+              <div class="print-progress-line" data-print-step="task">
+                <span>任务</span>
+                <strong id="print-step-task">等待</strong>
+              </div>
+              <div class="print-progress-line" data-print-step="render">
+                <span>渲染</span>
+                <strong id="print-step-render">等待</strong>
+              </div>
+              <div class="print-progress-line" data-print-step="submit">
+                <span>提交</span>
+                <strong id="print-step-submit">等待</strong>
+              </div>
+              <div class="print-progress-line" data-print-step="printer">
+                <span>打印机</span>
+                <strong id="print-step-printer">等待</strong>
+              </div>
+            </div>
+            <div class="printer-health">
+              <span>打印机健康</span>
+              <strong id="printer-health-state">读取中</strong>
+              <small id="printer-health-detail">-</small>
+            </div>
+            <div class="reprint-process-table">
+              <div class="reprint-process-title">
+                <strong>重打最新进程表</strong>
+                <span id="reprint-process-summary">等待任务。</span>
+              </div>
+              <div class="reprint-process-head">
+                <span>时间</span>
+                <span>阶段</span>
+                <span>打印任务</span>
+              </div>
+              <div id="reprint-process-list" class="reprint-process-list">
+                <div class="reprint-process-empty">暂无重打任务。</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="insight-section">
+            <div class="panel-title row-title compact-title">
+              <div>
+                <h2>追书</h2>
+                <p id="book-follow-state">等待 yellow_book 链路状态。</p>
+              </div>
+              <button id="book-follow-refresh" type="button" class="secondary">刷新</button>
+            </div>
+            <div class="book-follow-status-grid">
+              <div>
+                <span>检测器</span>
+                <strong id="book-follow-detector">-</strong>
+              </div>
+              <div>
+                <span>目标</span>
+                <strong id="book-follow-target">-</strong>
+              </div>
+              <div>
+                <span>桥接</span>
+                <strong id="book-follow-bridge">-</strong>
+              </div>
+              <div>
+                <span>更新</span>
+                <strong id="book-follow-update">-</strong>
+              </div>
+            </div>
+            <div class="book-follow-controls">
+              <label>
+                Base URL
+                <input id="book-follow-base-url" type="text" />
+              </label>
+              <label>
+                接收端口
+                <input id="book-follow-port" type="number" min="1" max="65535" />
+              </label>
+              <label>
+                最低饱和度
+                <input id="book-follow-saturation" type="number" min="0" max="255" />
+              </label>
+              <label>
+                黄色占比
+                <input id="book-follow-color-ratio" type="number" min="0.05" max="0.9" step="0.01" />
+              </label>
+              <label>
+                高频转发
+                <input id="book-follow-update-ms" type="number" min="40" max="1000" step="10" />
+              </label>
+            </div>
+            <div class="side-button-row">
+              <button id="book-follow-start" type="button">启动追书</button>
+              <button id="book-follow-stop" type="button" class="danger">停止追书</button>
+            </div>
+            <pre id="book-follow-log" class="book-follow-log">-</pre>
+          </section>
+
+          <section class="insight-section">
+            <div class="panel-title">
+              <h2>摸摸系统</h2>
+              <p id="touch-updated">读取状态中。</p>
+            </div>
+            <div class="touch-status-grid">
+              <div>
+                <span>运行</span>
+                <strong id="touch-active">-</strong>
+              </div>
+              <div>
+                <span>开机自启</span>
+                <strong id="touch-enabled">-</strong>
+              </div>
+              <div>
+                <span>灵敏度</span>
+                <strong id="touch-sensitivity">-</strong>
+              </div>
+              <div>
+                <span>固件阈值</span>
+                <strong id="touch-firmware">-</strong>
+              </div>
+            </div>
+            <div class="touch-sensitivity-controls" aria-label="摸摸灵敏度">
+              <button id="touch-sensitivity-stable" type="button" data-touch-preset="stable">稳定</button>
+              <button id="touch-sensitivity-balanced" type="button" data-touch-preset="balanced">均衡</button>
+              <button id="touch-sensitivity-sensitive" type="button" data-touch-preset="sensitive">高灵敏</button>
+            </div>
+            <div class="touch-config-grid">
+              <div>
+                <span>mapping</span>
+                <strong id="touch-mapping-version">-</strong>
+              </div>
+              <div>
+                <span>迟滞</span>
+                <strong id="touch-hysteresis">-</strong>
+              </div>
+              <div>
+                <span>释放防抖</span>
+                <strong id="touch-release-debounce">-</strong>
+              </div>
+            </div>
+            <div class="touch-audio-grid">
+              <div>
+                <span>语音桥</span>
+                <strong id="touch-audio-state">-</strong>
+              </div>
+              <div>
+                <span>端口</span>
+                <strong id="touch-audio-bridge">-</strong>
+              </div>
+            </div>
+            <div class="side-button-row">
+              <button id="touch-stop" type="button" class="danger">临时关闭</button>
+              <button id="touch-start" type="button">临时启动</button>
+            </div>
+            <div class="side-button-row">
+              <button id="touch-audio-check" type="button">语音自检</button>
+              <button id="narration-play" type="button">念白</button>
+            </div>
+            <div class="side-button-row">
+              <button id="touch-disable" type="button" class="danger">关闭自启</button>
+              <button id="touch-enable" type="button" class="secondary">恢复自启</button>
+            </div>
+            <pre id="touch-log" class="touch-log">-</pre>
+          </section>
+        </article>
+
+        <article class="panel servo-panel">
+          <div class="panel-title row-title compact-title">
+            <div>
+              <h2>舵机当前位置</h2>
+              <p id="servo-position-summary">需要时手动刷新。</p>
+            </div>
+            <button id="refresh-servos" type="button">刷新</button>
+          </div>
+          <div class="servo-grid">
+            <div class="servo-cell">
+              <span>00</span>
+              <strong id="servo-pos-0">-</strong>
+            </div>
+            <div class="servo-cell">
+              <span>01</span>
+              <strong id="servo-pos-1">-</strong>
+            </div>
+            <div class="servo-cell">
+              <span>02</span>
+              <strong id="servo-pos-2">-</strong>
+            </div>
+            <div class="servo-cell">
+              <span>03</span>
+              <strong id="servo-pos-3">-</strong>
+            </div>
+          </div>
+          <div class="servo-control-head">
+            <strong>手动微调</strong>
+            <div class="servo-speed-toolbar">
+              <div class="servo-speed-preset" aria-label="舵机速度档位">
+                <button type="button" data-servo-speed-preset="slow">慢</button>
+                <button type="button" data-servo-speed-preset="medium" class="active">中</button>
+                <button type="button" data-servo-speed-preset="fast">快</button>
+              </div>
+              <span id="servo-speed-meta" class="servo-speed-meta">步长 24 · speeds 320 / 240 / 240 / 320</span>
+            </div>
+          </div>
+          <div class="servo-control-grid">
+            <div class="servo-control-row" data-servo-id="0">
+              <span>00</span>
+              <button type="button" data-servo-delta="-1">−</button>
+              <strong id="servo-target-0">-</strong>
+              <button type="button" data-servo-delta="1">+</button>
+            </div>
+            <div class="servo-control-row" data-servo-id="1">
+              <span>01</span>
+              <button type="button" data-servo-delta="-1">−</button>
+              <strong id="servo-target-1">-</strong>
+              <button type="button" data-servo-delta="1">+</button>
+            </div>
+            <div class="servo-control-row" data-servo-id="2">
+              <span>02</span>
+              <button type="button" data-servo-delta="-1">−</button>
+              <strong id="servo-target-2">-</strong>
+              <button type="button" data-servo-delta="1">+</button>
+            </div>
+            <div class="servo-control-row" data-servo-id="3">
+              <span>03</span>
+              <button type="button" data-servo-delta="-1">−</button>
+              <strong id="servo-target-3">-</strong>
+              <button type="button" data-servo-delta="1">+</button>
+            </div>
+          </div>
+          <div class="servo-record-head">
+            <strong>逐帧记录</strong>
+            <span id="servo-record-summary">0 帧</span>
+          </div>
+          <div class="servo-record-actions">
+            <button id="servo-frame-record" type="button" class="execute">Record</button>
+            <button id="servo-frame-save" type="button" class="secondary">Save</button>
+            <button id="servo-frame-clear" type="button" class="danger">Clear</button>
+          </div>
+          <div class="servo-record-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>00</th>
+                  <th>01</th>
+                  <th>02</th>
+                  <th>03</th>
+                  <th>速度</th>
+                  <th>时间</th>
+                </tr>
+              </thead>
+              <tbody id="servo-record-body">
+                <tr>
+                  <td colspan="7">暂无记录</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel" style="margin-top: 12px; padding: 12px;">
+            <div class="panel-title compact-title">
+              <div>
+                <h2>键盘录制 / 回放</h2>
+                <p>录制当前位置轨迹，支持本地回放、分段倍速和发送到后端。</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button id="recStart" type="button">开始录制</button>
+              <button id="recStop" type="button" disabled>停止录制</button>
+              <button id="saveRec" type="button" disabled>保存录制</button>
+              <input id="fileInput" type="file" style="min-width: 180px;" />
+              <button id="playFile" type="button" disabled>播放文件</button>
+              <label style="display: flex; align-items: center; gap: 6px; margin-left: 6px;">
+                <span>倍速</span>
+                <input id="playSpeed" type="number" step="0.1" value="1.0" style="width: 72px;" />
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; margin-left: 6px;">
+                <input id="sendToBackend" type="checkbox" />
+                发送到后端
+              </label>
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <label style="font-size: 0.9rem; color: var(--muted);">
+                段起
+                <input id="segStart" type="number" value="0" style="width: 80px;" />
+              </label>
+              <label style="font-size: 0.9rem; color: var(--muted);">
+                段止
+                <input id="segEnd" type="number" value="0" style="width: 80px;" />
+              </label>
+              <label style="font-size: 0.9rem; color: var(--muted);">
+                段倍速
+                <input id="segSpeed" type="number" step="0.1" value="1.0" style="width: 80px;" />
+              </label>
+              <button id="applySeg" type="button">应用</button>
+              <button id="playPause" type="button">播放/暂停</button>
+              <button id="stepPrev" type="button">上帧</button>
+              <button id="stepNext" type="button">下帧</button>
+              <div id="statusMsg" style="margin-left: 8px; color: var(--muted);"></div>
+            </div>
+            <div id="timeline" style="margin-top: 8px; height: 36px; background: rgba(0, 0, 0, 0.03); border-radius: 6px; position: relative;"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel show-panel">
+        <div class="panel-title row-title">
+          <div>
+            <h2>展示流程</h2>
+            <p id="show-state">等待展示状态。</p>
+          </div>
+          <button id="show-reset" type="button" class="secondary">重置展示锁</button>
+        </div>
+        <div class="show-step-grid show-flow-primary">
+          <button type="button" data-show-step="wake_up">起床</button>
+          <button type="button" data-show-step="touch">摸摸</button>
+          <div class="show-step-group" aria-label="告诉这个书是在讲什么">
+            <span>告诉这个书是在讲什么</span>
+            <button type="button" data-show-step="voice_motion:listening">听</button>
+            <button type="button" data-show-step="voice_motion:thinking">想</button>
+            <button type="button" data-show-step="voice_motion:answer">答</button>
+          </div>
+          <button type="button" data-show-step="offer_celebrate">拿 Offer 庆祝</button>
+          <button type="button" data-show-step="photo_pose">给大家拍照片</button>
+          <button type="button" data-show-step="sleep" class="danger">睡觉</button>
+        </div>
+        <div class="show-step-grid show-flow-secondary" aria-label="其他展示内容">
+          <button type="button" id="open-celebration-page" class="secondary">打开庆祝页</button>
+          <button type="button" data-show-step="photo_snapshot">快照拍照</button>
+          <button type="button" data-show-step="photo_highres" class="secondary">高清拍照</button>
+        </div>
+        <div class="show-status-grid">
+          <div>
+            <span>当前步骤</span>
+            <strong id="show-active-step">-</strong>
+          </div>
+          <div>
+            <span>书本</span>
+            <strong id="show-book">-</strong>
+          </div>
+          <div>
+            <span>照片</span>
+            <strong id="show-photo">-</strong>
+          </div>
+          <div>
+            <span>资源锁</span>
+            <strong id="show-locks">-</strong>
+          </div>
+        </div>
+        <pre id="show-feedback" class="show-feedback">-</pre>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title row-title">
+          <div>
+            <h2>演示动作</h2>
+            <p>每个场景都能先预览 shell，再执行真机。评委默认在左侧的动作已经写进对应脚本。</p>
+          </div>
+          <button id="refresh" type="button">刷新状态</button>
+        </div>
+        <div id="scene-grid" class="scene-grid"></div>
+      </section>
+
+      <section class="panel queue-panel">
+        <div class="panel-title">
+          <h2>执行队列</h2>
+          <p id="queue-summary">空闲</p>
+        </div>
+        <div id="queue-list" class="queue-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h2>安全与救场</h2>
+          <p>灯光和只读检查优先；机械动作按钮已标出风险。</p>
+        </div>
+        <div id="quick-grid" class="quick-grid">
+          <article id="teach-motion-card" class="quick-card teach-motion-card motion-medium">
+            <div>
+              <strong>示教录制</strong>
+              <span id="teach-motion-state">未录制 · 录制时请手扶灯臂</span>
+            </div>
+            <div class="teach-motion-buttons">
+              <button id="teach-start" type="button">开始录制</button>
+              <button id="teach-stop" type="button" class="danger">结束录制</button>
+              <button id="teach-play" type="button" class="execute">回放</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="panel-title row-title">
+          <div>
+            <h2>命令与日志</h2>
+            <p id="output-title">等待操作</p>
+          </div>
+          <button id="clear-output" type="button">清空</button>
+        </div>
+        <pre id="output"></pre>
+      </section>
+    </main>
+    <script src="/app.js?v=20260525-fast-start"></script>
+  </body>
+</html>

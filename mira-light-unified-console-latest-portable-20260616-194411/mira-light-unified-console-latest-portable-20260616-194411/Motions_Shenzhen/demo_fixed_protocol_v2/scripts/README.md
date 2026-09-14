@@ -1,0 +1,99 @@
+# Demo Fixed Protocol Scripts
+
+这个目录放的是深圳演示用的**可执行固定动作脚本**。
+
+## 使用规则
+
+- 默认只打印远端执行计划
+- 加 `--execute` 才真正通过 SSH 执行
+- 所有动作都基于板端现有命令和脚本
+- 不引入实时视觉或语音输入
+
+## 脚本清单
+
+- `01_presence_wake_demo.py`
+- `02_cautious_intro_demo.py`
+- `03_hand_nuzzle_faithful_demo.py`
+- `03_from_07_right_hand_nuzzle_test.py`
+- `03_from_07_two_stage_light_only_test.py`
+- `04_offer_celebrate_demo.py`
+- `05_farewell_demo.py`
+- `06_sleep_demo.py`
+- `07_tabletop_follow_demo.py`
+- `08_photo_pose_demo.py`
+- `09_wake_photo_sleep_demo.py`
+
+## 对应关系
+
+- `01_presence_wake_demo.py`
+  - 对应：`Videos/01`
+  - PDF 副本第 1 条
+- `02_cautious_intro_demo.py`
+  - 对应：`Videos/02`
+  - PDF 副本第 2 条
+- `03_hand_nuzzle_faithful_demo.py`
+  - 对应：`Videos/03`
+  - PDF 副本第 3 条
+- `03_hand_nuzzle_demo.py`
+  - 旧版备用脚本；其中 `--variant 04` 可作为 `Videos/04` 的短版接近 fallback
+- `03_from_07_right_hand_nuzzle_test.py`
+  - 测试脚本；承接 `03_from_07_start_light_test.py` 的 07 结束起始位，灯光使用 `03_from_07_two_stage_light_only_test.py` 的两阶段方案；第一阶段暖色呼吸，第二阶段旋转灯和摸一摸动作同时进行，追手后停留不复位。
+- `03_from_07_two_stage_light_only_test.py`
+  - 只测灯光；无舵机动作，用于确认第一阶段暖色呼吸和第二阶段连续旋转灯是否正常。
+- `04_offer_celebrate_demo.py`
+  - 对应：`Videos/05`
+  - PDF 副本第 5 条
+- `05_farewell_demo.py`
+  - 对应：`Videos/06`
+  - PDF 副本第 6 条
+- `06_sleep_demo.py`
+  - 对应：`Videos/07`
+  - PDF 副本第 7 条
+- `07_tabletop_follow_demo.py`
+  - 对应：`Videos/08`
+  - PDF 副本第 4 条：追踪 / 展示感知能力
+- `08_photo_pose_demo.py`
+  - 额外控制台动作：拍照
+  - 0/3 号回中，1/2 号进入拍照姿态，四个关节用同一条 pose 命令同步执行
+- `09_wake_photo_sleep_demo.py`
+  - 额外控制台动作：醒来拍照再睡
+  - 从睡姿醒来、伸懒腰、摆到 `2048/1880/1650/2048` 拍照姿态，通过板端 `/dev/video0` 抓取真实 JPEG；照片保存到本机后立刻后台二次元渲染并提交固定 IP 队列 `Mi_Wireless_Photo_Printer_9135_IP` 打印，打印纸张参数为 `media=na_index-4x6_4x6in`，同时主流程用较短过渡停顿回到睡觉姿态，最后自动关灯
+  - `ARK_API_KEY` 可以来自当前环境，也可以来自 macOS Keychain 的 `mira-light-ark-api-key` 项；LaunchAgent 启动控制台时会使用 Keychain fallback，避免重启后丢失渲染密钥
+
+## 特别说明
+
+`Videos/03` 和 `Videos/04` 都服务于第三个动作“摸一摸”，但分工不同。
+
+因此：
+
+- `03_hand_nuzzle_faithful_demo.py` 是主控台使用的新版主脚本，忠实表达 `Videos/03` 和 PDF 第 3 条的掌下亲密蹭手。
+- `03_hand_nuzzle_demo.py --variant 04` 保留为手比较远时的短版目标接近备用。
+
+## 示例
+
+预览：
+
+```bash
+python3 01_presence_wake_demo.py
+```
+
+执行：
+
+```bash
+python3 01_presence_wake_demo.py --execute
+```
+
+更多示例：
+
+```bash
+python3 03_hand_nuzzle_faithful_demo.py --rub-cycles 6 --linger-seconds 1.0
+python3 03_from_07_right_hand_nuzzle_test.py --stage1-seconds 3.5 --nuzzle-cycles 2
+python3 03_from_07_two_stage_light_only_test.py --stage1-seconds 3.5 --stage2-seconds 3.5
+python3 03_hand_nuzzle_demo.py --variant 04 --rub-cycles 3
+python3 04_offer_celebrate_demo.py --party-light spin --hold-seconds 1.2
+python3 05_farewell_demo.py --nod-cycles 2 --linger-seconds 0.8
+python3 06_sleep_demo.py --lights-off
+python3 07_tabletop_follow_demo.py --correction-cycles 2 --final-pose target
+python3 08_photo_pose_demo.py --target-0 2048 --target-1 1880 --target-2 1650 --target-3 2048
+ARK_API_KEY=... DIGUA_SSH_PASSWORD=... python3 09_wake_photo_sleep_demo.py --hold-high-seconds 1.2 --rest-seconds 0.3 --printer-queue Mi_Wireless_Photo_Printer_9135_IP --print-media na_index-4x6_4x6in
+```

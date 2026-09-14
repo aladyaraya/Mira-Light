@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mira Light Camera Director Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Mira Light</p>
+          <h1>Camera Director</h1>
+        </div>
+        <div class="actions">
+          <button id="start-watch" type="button">开始自动刷新</button>
+          <button id="stop-watch" type="button">暂停</button>
+          <button id="capture-once" type="button">立即抓图</button>
+        </div>
+      </header>
+
+      <section class="status-grid" aria-label="状态">
+        <article>
+          <span>连接状态</span>
+          <strong id="connection-status">-</strong>
+        </article>
+        <article>
+          <span>抓图间隔</span>
+          <strong><input id="interval-input" type="number" min="2" max="120" step="1" value="10" /> 秒</strong>
+        </article>
+        <article>
+          <span>最新画面时间</span>
+          <strong id="latest-time">-</strong>
+        </article>
+        <article>
+          <span>画面大小</span>
+          <strong id="frame-meta">-</strong>
+        </article>
+      </section>
+
+      <section class="viewer" aria-label="最新画面">
+        <div class="image-wrap">
+          <img id="latest-image" alt="Mira Light 摄像头最新画面" />
+          <div id="placeholder" class="placeholder">等待第一帧</div>
+        </div>
+        <aside class="side-panel">
+          <h2>板端连接</h2>
+          <dl id="config-list"></dl>
+          <h2>最近错误</h2>
+          <pre id="error-view">-</pre>
+        </aside>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

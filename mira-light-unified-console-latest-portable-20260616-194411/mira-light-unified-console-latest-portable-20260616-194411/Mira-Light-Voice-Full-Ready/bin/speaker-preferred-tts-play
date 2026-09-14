@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+voice="zh-CN-XiaoyiNeural"
+lang="zh-CN"
+rate="-12%"
+pitch="-20%"
+text=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --voice) voice="${2:?}"; shift 2 ;;
+    --lang) lang="${2:?}"; shift 2 ;;
+    --rate) rate="${2:?}"; shift 2 ;;
+    --pitch) pitch="${2:?}"; shift 2 ;;
+    --) shift; text="$*"; break ;;
+    -*) echo "unknown option: $1" >&2; exit 2 ;;
+    *) text="$*"; break ;;
+  esac
+done
+
+if [[ -z "${text// }" ]]; then
+  echo "missing text" >&2
+  exit 2
+fi
+
+if ! command -v node-edge-tts >/dev/null 2>&1; then
+  say "$text"
+  exit 0
+fi
+
+tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/mira-edge-tts.XXXXXX")"
+trap 'rm -rf "$tmp_dir"' EXIT
+mp3="$tmp_dir/reply.mp3"
+silence="$tmp_dir/warmup.wav"
+
+node-edge-tts --text "$text" --filepath "$mp3" --voice "$voice" --lang "$lang" --rate "$rate" --pitch "$pitch" >/dev/null
+python3 - "$silence" <<'PY' >/dev/null 2>&1 || true
+import sys
+import wave
+
+path = sys.argv[1]
+sample_rate = 44100
+duration_seconds = 0.18
+frames = int(sample_rate * duration_seconds)
+with wave.open(path, "wb") as wav:
+    wav.setnchannels(2)
+    wav.setsampwidth(2)
+    wav.setframerate(sample_rate)
+    wav.writeframes(b"\0\0\0\0" * frames)
+PY
+if [[ -s "$silence" ]]; then
+  afplay "$silence" >/dev/null 2>&1 || true
+fi
+afplay "$mp3"

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chrome Camera Anime Console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Chrome Camera Anime</p>
+          <h1>拍照渲染启动台</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="refresh" type="button">刷新</button>
+          <button id="start-watch" type="button">启动监听</button>
+          <button id="stop-watch" type="button">暂停监听</button>
+          <button id="toggle-focus-trigger" type="button">切换 Chrome 切回触发</button>
+          <button id="capture-render" class="primary" type="button">拍照 + 渲染 + 打印</button>
+        </div>
+      </header>
+
+      <section class="status-band" id="status-band"></section>
+
+      <section class="workspace">
+        <div class="panel">
+          <div class="panel-title">
+            <h2>运行状态</h2>
+            <span id="last-updated">-</span>
+          </div>
+          <dl class="runtime-list" id="runtime-list"></dl>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            <h2>最新任务</h2>
+            <button id="print-last" type="button">打印最新图</button>
+          </div>
+          <pre id="latest-job" class="json-view">{}</pre>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h2>任务队列</h2>
+          <span id="job-count">0</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th>Status</th>
+                <th>Trigger</th>
+                <th>Output</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h2>日志</h2>
+          <span id="log-count">0</span>
+        </div>
+        <pre id="logs" class="log-view"></pre>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

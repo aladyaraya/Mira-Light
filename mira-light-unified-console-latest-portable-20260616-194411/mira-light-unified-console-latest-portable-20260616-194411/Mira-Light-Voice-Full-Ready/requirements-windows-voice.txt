@@ -1,0 +1,8 @@
+numpy
+sounddevice
+soundfile
+requests
+websockets
+python-socks
+PySocks
+scipy

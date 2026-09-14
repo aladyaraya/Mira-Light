@@ -1,0 +1,9 @@
+{
+  "listenHost": "0.0.0.0",
+  "listenPort": 9783,
+  "assetsRoot": "./assets",
+
+  "_doc": "精简音频桥的配置。监听 0.0.0.0:9783，板上的 touch_dispatcher 通过 HTTP POST 触发音频。",
+  "_doc_assetsRoot": "音频根目录。相对路径 = 相对 bridge_config.json 所在目录。asset_name=speech/xxx.aiff 会解析为 ./assets/speech/xxx.aiff",
+  "_doc_port": "如果改了端口，记得同步更新板上 touch_mapping.json 的 comfort_sound.bridge_url"
+}
